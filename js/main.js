@@ -1,7 +1,6 @@
 import * as THREE from './three.module.js';
 import { FontLoader } from './FontLoader.js';
 import { TextGeometry } from './TextGeometry.js';
-import { OrbitControls } from './OrbitControls.js';
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75,window.innerWidth / window.innerHeight,10,1000);
@@ -9,10 +8,8 @@ const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-let stars, starGeo;
+let stars1, stars2, starGeo;
 let textMesh = new THREE.Mesh();
-
-const controls = new OrbitControls( camera, renderer.domElement );  
 
 lighting();
 name();
@@ -39,28 +36,26 @@ function particles() {
     map: sprite,
   });
 
-  stars = new THREE.Points(starGeo, starMaterial);
-  scene.add(stars);
+  stars1 = new THREE.Points(starGeo, starMaterial);
+  stars2 = new THREE.Points(starGeo, starMaterial);
+  scene.add(stars1);
+  scene.add(stars2);
+  stars2.position.set(0, 500, 0)
 }
-
-function randColor(){
-      let randColorR = Math.random(256);
-      let randColorG = Math.random(256);
-      let randColorB = Math.random(256);
-      stars.material.color.setRGB(randColorR,randColorG,randColorB);
-  };
-
+let inc = 2
 function animateParticles() {
-    starGeo.verticesNeedUpdate = true;
-    stars.position.y -= 2;
-    
-    if(stars.position.y < -200){
-      stars.position.y = 200;
+    // starGeo.verticesNeedUpdate = true;
+    stars1.position.y -= 0.9;
+    stars2.position.y -= 0.9;
+
+    if(stars1.position.y <= -500){
+      stars1.position.set(0, 500, 0)
     }
-
-  };
-
-  setInterval(randColor, 3000)
+    
+    if(stars2.position.y <= -500){
+      stars2.position.set(0, 500, 0)
+    }
+  }
 
 function name(){
   const texture = new THREE.TextureLoader().load("./assets/textures/wooden.jpg");
@@ -115,7 +110,10 @@ function lighting() {
 function animate() {
   requestAnimationFrame(animate);
   animateParticles();
-  
+  if (textMesh) { // ✅ only rotate if defined
+      textMesh.rotation.x += 0.008;
+      textMesh.rotation.y += 0.008;
+    }
   renderer.render(scene, camera);
 }
 
